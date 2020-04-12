@@ -48,6 +48,7 @@ AddEventHandler('esx_repairkit:onUse', function()
 		if DoesEntityExist(vehicle) then
 			if Config.IgnoreAbort then
 				TriggerServerEvent('esx_repairkit:removeKit')
+				SetVehicleDoorOpen(vehicle, 4,0,0)
 			end
 			TaskStartScenarioInPlace(playerPed, "PROP_HUMAN_BUM_BIN", 0, true)
 
@@ -58,8 +59,9 @@ AddEventHandler('esx_repairkit:onUse', function()
 				Citizen.Wait(Config.RepairTime * 1000)
 
 				if CurrentAction ~= nil then
-					SetVehicleFixed(vehicle)
-					SetVehicleDeformationFixed(vehicle)
+					SetVehicleDoorShut(vehicle, 4,0,0)
+					SetVehicleEngineHealth(vehicle, 700.0)
+			        	SetVehiclePetrolTankHealth(vehicle, 700.0)
 					SetVehicleUndriveable(vehicle, false)
 					SetVehicleEngineOn(vehicle, true, true)
 					ClearPedTasksImmediately(playerPed)
