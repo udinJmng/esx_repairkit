@@ -45,11 +45,14 @@ AddEventHandler('esx_repairkit:onUse', function()
 			vehicle = GetClosestVehicle(coords.x, coords.y, coords.z, 5.0, 0, 71)
 		end
 
-		if DoesEntityExist(vehicle) then
-			if Config.IgnoreAbort then
+		if DoesEntityExist(vehicle) 
+		then
+			local bonnet = GetEntityBoneIndexByName(vehicle, 'bonnet')
+			if bonnet ~= -1 and Config.IgnoreAbort then
+				local coords = GetWorldPositionOfEntityBone(vehicle, bonnet)
+                if GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()), coords, true) <= 2.0 then
 				TriggerServerEvent('esx_repairkit:removeKit')
 				SetVehicleDoorOpen(vehicle, 4,0,0)
-			end
 			TaskStartScenarioInPlace(playerPed, "PROP_HUMAN_BUM_BIN", 0, true)
 
 			Citizen.CreateThread(function()
@@ -61,7 +64,7 @@ AddEventHandler('esx_repairkit:onUse', function()
 				if CurrentAction ~= nil then
 					SetVehicleDoorShut(vehicle, 4,0,0)
 					SetVehicleEngineHealth(vehicle, 700.0)
-			        	SetVehiclePetrolTankHealth(vehicle, 700.0)
+			        SetVehiclePetrolTankHealth(vehicle, 700.0)
 					SetVehicleUndriveable(vehicle, false)
 					SetVehicleEngineOn(vehicle, true, true)
 					ClearPedTasksImmediately(playerPed)
@@ -97,4 +100,6 @@ AddEventHandler('esx_repairkit:onUse', function()
 	else
 		ESX.ShowNotification(_U('no_vehicle_nearby'))
 	end
+end
+end
 end)
