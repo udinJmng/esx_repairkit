@@ -45,13 +45,13 @@ AddEventHandler('esx_repairkit:onUse', function()
 			vehicle = GetClosestVehicle(coords.x, coords.y, coords.z, 5.0, 0, 71)
 		end
 
-		if DoesEntityExist(vehicle) 
+		if DoesEntityExist(vehicle) and IsVehicleSeatFree(vehicle, -1) and IsPedWalking(playerPed)
 		then
 			local bonnet = GetEntityBoneIndexByName(vehicle, 'bonnet')
 			if bonnet ~= -1 and Config.IgnoreAbort then
 				local coords = GetWorldPositionOfEntityBone(vehicle, bonnet)
                 if GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()), coords, true) <= 2.0 then
-				TriggerServerEvent('esx_repairkit:removeKit')
+				TriggerServerEvent('esx_repairkit:removeKit') 
 				SetVehicleDoorOpen(vehicle, 4,0,0)
 			TaskStartScenarioInPlace(playerPed, "PROP_HUMAN_BUM_BIN", 0, true)
 
@@ -79,24 +79,23 @@ AddEventHandler('esx_repairkit:onUse', function()
 				CurrentAction = nil
 				TerminateThisThread()
 			end)
+
+		-- Citizen.CreateThread(function()
+			-- Citizen.Wait(0)
+
+			-- if CurrentAction ~= nil then
+				-- SetTextComponentFormat('STRING')
+				-- AddTextComponentString(_U('abort_hint'))
+				-- DisplayHelpTextFromStringLabel(0, 0, 1, -1)
+
+				-- if IsControlJustReleased(0, Keys["X"]) then
+					-- TerminateThread(ThreadID)
+					-- ESX.ShowNotification(_U('aborted_repair'))
+					-- CurrentAction = nil
+				-- end
+			-- end
+
 		end
-
-		Citizen.CreateThread(function()
-			Citizen.Wait(0)
-
-			if CurrentAction ~= nil then
-				SetTextComponentFormat('STRING')
-				AddTextComponentString(_U('abort_hint'))
-				DisplayHelpTextFromStringLabel(0, 0, 1, -1)
-
-				if IsControlJustReleased(0, Keys["X"]) then
-					TerminateThread(ThreadID)
-					ESX.ShowNotification(_U('aborted_repair'))
-					CurrentAction = nil
-				end
-			end
-
-		end)
 	else
 		ESX.ShowNotification(_U('no_vehicle_nearby'))
 	end
