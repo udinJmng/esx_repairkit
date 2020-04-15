@@ -49,13 +49,12 @@ AddEventHandler('esx_repairkit:onUse', function()
 			vehicle = GetClosestVehicle(coords.x, coords.y, coords.z, 5.0, 0, 71)
 		end
 
-		if DoesEntityExist(vehicle) and IsVehicleSeatFree(vehicle, -1) and IsPedWalking(playerPed)
+		if DoesEntityExist(vehicle) and IsVehicleSeatFree(vehicle, -1) and IsPedOnFoot(playerPed)
 		then
-			local bonnet = GetEntityBoneIndexByName(vehicle, 'bonnet')
-			if bonnet ~= -1 and Config.IgnoreAbort then
-				local coords = GetWorldPositionOfEntityBone(vehicle, bonnet)
-                if GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()), coords, true) <= 2.0 then
-				TriggerServerEvent('esx_repairkit:removeKit') 
+			local engine = GetEntityBoneIndexByName(vehicle, 'engine')
+			if engine ~= -1 and Config.IgnoreAbort then
+				local coords = GetWorldPositionOfEntityBone(vehicle, engine)
+                if GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()), coords, true) <= 2.0 then 
 				SetVehicleDoorOpen(vehicle, 4,0,0)
 			TaskStartScenarioInPlace(playerPed, "PROP_HUMAN_BUM_BIN", 0, true)
 
@@ -63,6 +62,9 @@ AddEventHandler('esx_repairkit:onUse', function()
 				ThreadID = GetIdOfThisThread()
 				CurrentAction = 'repair'
 				isReparing = not isReparing
+				SetTextComponentFormat('STRING')
+				AddTextComponentString(_U('abort_hint'))
+				DisplayHelpTextFromStringLabel(0, 0, 1, -1)
 				Citizen.Wait(Config.RepairTime * 1000)
 
 				if CurrentAction ~= nil then
@@ -70,34 +72,24 @@ AddEventHandler('esx_repairkit:onUse', function()
 					SetVehicleUndriveable(vehicle, false)
 					SetVehicleEngineOn(vehicle, true, true)
 					ClearPedTasksImmediately(playerPed)
+					TriggerServerEvent('esx_repairkit:removeKit')
 					ESX.ShowNotification(_U('finished_repair'))
-				else
-					if Config.RealisticVehicleFailure then
+				if Config.RealisticVehicleFailure then
 						SetVehicleEngineHealth(vehicle, 700.0)
 						SetVehiclePetrolTankHealth(vehicle, 700.0)
 					else
 						SetVehicleEngineHealth(vehicle, 1000.0) 
 						SetVehiclePetrolTankHealth(vehicle, 1000.0)
 					end
+				if isReparing == true then
+					isReparing = not isReparing
 				end
-
-				if not Config.IgnoreAbort then
-					TriggerServerEvent('esx_repairkit:removeKit')
 				end
 
 				CurrentAction = nil
 				TerminateThisThread()
 			end)
 
-		Citizen.CreateThread(function()
-			Citizen.Wait(0)
-
-			if CurrentAction ~= nil then
-				SetTextComponentFormat('STRING')
-				AddTextComponentString(_U('abort_hint'))
-				DisplayHelpTextFromStringLabel(0, 0, 1, -1)
-			end
-		end)
 		Citizen.CreateThread(function()
 			while true do
 			Citizen.Wait(0)
@@ -108,6 +100,9 @@ AddEventHandler('esx_repairkit:onUse', function()
 				ESX.ShowNotification(_U('aborted_repair'))
 				isReparing = not isReparing
 				CurrentAction = nil
+				if Config.IgnoreAbort then
+					TriggerServerEvent('esx_repairkit:removeKit')
+				end
 			end
 		end
 	end)
