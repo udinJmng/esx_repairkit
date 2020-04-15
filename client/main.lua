@@ -12,6 +12,7 @@ local Keys = {
 
 ESX						= nil
 local CurrentAction		= nil
+local isReparing 		= false
 local PlayerData		= {}
 
 Citizen.CreateThread(function()
@@ -38,6 +39,9 @@ AddEventHandler('esx_repairkit:onUse', function()
 
 	if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 5.0) then
 		local vehicle = nil
+		else
+			ESX.ShowNotification(_U('no_vehicle_nearby'))
+		end
 
 		if IsPedInAnyVehicle(playerPed, false) then
 			vehicle = GetVehiclePedIsIn(playerPed, false)
@@ -58,18 +62,23 @@ AddEventHandler('esx_repairkit:onUse', function()
 			Citizen.CreateThread(function()
 				ThreadID = GetIdOfThisThread()
 				CurrentAction = 'repair'
-
+				isReparing = not isReparing
 				Citizen.Wait(Config.RepairTime * 1000)
 
 				if CurrentAction ~= nil then
 					SetVehicleDoorShut(vehicle, 4,0,0)
-					SetVehicleEngineHealth(vehicle, 700.0)
-			        SetVehiclePetrolTankHealth(vehicle, 700.0)
 					SetVehicleUndriveable(vehicle, false)
 					SetVehicleEngineOn(vehicle, true, true)
 					ClearPedTasksImmediately(playerPed)
-
 					ESX.ShowNotification(_U('finished_repair'))
+				else
+					if Config.RealisticVehicleFailure then
+						SetVehicleEngineHealth(vehicle, 700.0)
+						SetVehiclePetrolTankHealth(vehicle, 700.0)
+					else
+						SetVehicleEngineHealth(vehicle, 1000.0) 
+						SetVehiclePetrolTankHealth(vehicle, 1000.0)
+					end
 				end
 
 				if not Config.IgnoreAbort then
@@ -80,25 +89,30 @@ AddEventHandler('esx_repairkit:onUse', function()
 				TerminateThisThread()
 			end)
 
-		-- Citizen.CreateThread(function()
-			-- Citizen.Wait(0)
+		Citizen.CreateThread(function()
+			Citizen.Wait(0)
 
-			-- if CurrentAction ~= nil then
-				-- SetTextComponentFormat('STRING')
-				-- AddTextComponentString(_U('abort_hint'))
-				-- DisplayHelpTextFromStringLabel(0, 0, 1, -1)
-
-				-- if IsControlJustReleased(0, Keys["X"]) then
-					-- TerminateThread(ThreadID)
-					-- ESX.ShowNotification(_U('aborted_repair'))
-					-- CurrentAction = nil
-				-- end
-			-- end
-
+			if CurrentAction ~= nil then
+				SetTextComponentFormat('STRING')
+				AddTextComponentString(_U('abort_hint'))
+				DisplayHelpTextFromStringLabel(0, 0, 1, -1)
+			end
+		end)
+		Citizen.CreateThread(function()
+			while true do
+			Citizen.Wait(0)
+			if IsControlJustPressed(0, Keys["X"]) and isReparing == true then
+				ClearPedTasksImmediately(playerPed)
+				SetVehicleDoorShut(vehicle, 4,0,0)
+				TerminateThread(ThreadID)
+				ESX.ShowNotification(_U('aborted_repair'))
+				isReparing = not isReparing
+				CurrentAction = nil
+			end
 		end
-	else
-		ESX.ShowNotification(_U('no_vehicle_nearby'))
-	end
+	end)
+end
 end
 end
 end)
+
