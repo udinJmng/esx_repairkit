@@ -1,4 +1,4 @@
-# esx_repairkit [![Release](https://img.shields.io/badge/Release-V%202.1-blue)](https://github.com/clementinise/esx_repairkit/releases/latest)
+# esx_repairkit [![Release](https://img.shields.io/badge/Release-V%202.2-blue)](https://github.com/clementinise/esx_repairkit/releases/latest)
 
 RepairKit script for FiveM ESX servers
 
