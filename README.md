@@ -1,4 +1,4 @@
-# esx_repairkit [![Release](https://img.shields.io/badge/Release-V%202.4-blue)](https://github.com/clementinise/esx_repairkit/releases/latest)
+# esx_repairkit [![Release](https://img.shields.io/badge/Release-V%203.0-blue)](https://github.com/clementinise/esx_repairkit/releases/latest)
 
 RepairKit script for FiveM ESX servers - https://forum.cfx.re/t/fork-esx-esx-repairkit-repairkit-item-for-car/1133523
 
