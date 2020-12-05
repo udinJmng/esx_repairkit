@@ -38,7 +38,7 @@ AddEventHandler('jobonline:set', function(jobs_online)
 
 	jobs = jobs_online
 
-	if jobs['mecano'] > 0 and Config.IfMecaIsOnline == true then
+	if jobs_online['mecano'] > 0 and Config.IfMecaIsOnline then
 		IsMecanoOnline = true
 	else 
 		IsMecanoOnline = false
@@ -58,12 +58,15 @@ RegisterNetEvent('esx_repairkit:onUse')
 AddEventHandler('esx_repairkit:onUse', function()
 	local playerPed		= GetPlayerPed(-1)
 	local coords		= GetEntityCoords(playerPed)
+	local coordsE = GetWorldPositionOfEntityBone(vehicle, engine)
 
-	if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 5.0) then
+	if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 5.0) and GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()), coordsE, true) >= 2.0 then
 		local vehicle = nil
 			ESX.ShowNotification(_U('not_near_engine'))
-		else
+		elseif not IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 5.0) then
 			ESX.ShowNotification(_U('no_vehicle_nearby'))
+		elseif GetVehicleEngineHealth(vehicle) == 0 then
+			ESX.ShowNotification(_U('car_dead'))
 		end
 
 		if IsPedInAnyVehicle(playerPed, false) then
@@ -72,12 +75,12 @@ AddEventHandler('esx_repairkit:onUse', function()
 			vehicle = GetClosestVehicle(coords.x, coords.y, coords.z, 5.0, 0, 71)
 		end
 
-		if DoesEntityExist(vehicle) and IsVehicleSeatFree(vehicle, -1) and IsPedOnFoot(playerPed) and IsMecanoOnline == false
+		if DoesEntityExist(vehicle) and IsVehicleSeatFree(vehicle, -1) and IsPedOnFoot(playerPed) and GetVehicleEngineHealth(vehicle) ~= 0 and not IsMecanoOnline
 		then
 			local engine = GetEntityBoneIndexByName(vehicle, 'engine')
 			if engine ~= -1 and Config.IgnoreAbort then
-				local coordsE = GetWorldPositionOfEntityBone(vehicle, engine)
-                if GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()), coordsE, true) <= 2.0 then 
+				-- local coordsE = GetWorldPositionOfEntityBone(vehicle, engine)
+                if GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()), coordsE, true) <= 3.0 then 
 				SetVehicleDoorOpen(vehicle, 4,0,0)
 			TaskStartScenarioInPlace(playerPed, "PROP_HUMAN_BUM_BIN", 0, true)
 
@@ -88,13 +91,13 @@ AddEventHandler('esx_repairkit:onUse', function()
 				SetTextComponentFormat('STRING')
 				AddTextComponentString(_U('abort_hint'))
 				DisplayHelpTextFromStringLabel(0, 0, 1, -1)
-				if Config.EnableProgressBar == true then
+				if Config.EnableProgressBar then
 				exports['progressBars']:startUI(Config.RepairTime * 1000, _U('ReparingEngine'))
 				else
 				end
 				Citizen.Wait(Config.RepairTime * 1000)
 				
-				local explosionchance = math.random(1, Config.ExplosionChance)
+				local destroychance = math.random(1, Config.DestroyChance)
 				if CurrentAction ~= nil then
 					SetVehicleDoorShut(vehicle, 4,0,0)
 					SetVehicleEngineOn(vehicle, true, true)
@@ -107,17 +110,17 @@ AddEventHandler('esx_repairkit:onUse', function()
 						SetVehicleEngineHealth(vehicle, 1000.0) 
 						SetVehiclePetrolTankHealth(vehicle, 1000.0)
 					end
-				if isReparing == true then
+				if isReparing then
 					isReparing = not isReparing
 				end
-				if explosionchance == 1 and Config.ExplosionOnFailedRepair == true then
+				if destroychance == 1 and Config.DestroyOnFailedRepair then
 					ShakeGameplayCam('SMALL_EXPLOSION_SHAKE', 0.1)
 					PlaySoundFromCoord(-1, "Jet_Explosions", coordsE.x, coordsE.y, coordsE.z, "exile_1", 0, 0, 0)
-					ESX.ShowNotification(_U('car_exploding'))
+					ESX.ShowNotification(_U('car_destroy'))
 					ClearPedTasksImmediately(playerPed)
 					SetVehicleEngineHealth(vehicle, 0)
 					Wait(4000)
-					SetVehicleTimedExplosion(vehicle)
+					-- SetVehicleTimedExplosion(vehicle)
 				else
 					ESX.ShowNotification(_U('finished_repair'))
 				end
@@ -130,12 +133,12 @@ AddEventHandler('esx_repairkit:onUse', function()
 		Citizen.CreateThread(function()
 			while true do
 			Citizen.Wait(0)
-			if IsControlJustPressed(0, Keys["X"]) and isReparing == true then
-				explosionchance = 2
+			if IsControlJustPressed(0, Keys["X"]) and isReparing then
+				destroychance = 2
 				ClearPedTasksImmediately(playerPed)
 				SetVehicleDoorShut(vehicle, 4,0,0)
 				TerminateThread(ThreadID)
-				if Config.EnableProgressBar == true then
+				if Config.EnableProgressBar then
 				exports['progressBars']:startUI(300, _U('Cancelling'))
 				else
 				end
@@ -187,9 +190,10 @@ AddEventHandler('tyrekit:onUse', function()
 	local coords		= GetEntityCoords(playerPed)
 	local closestTire 	= GetClosestVehicleTire(vehicle)
 	
-	if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 5.0) then
+	if IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 5.0) and closestTire == nil then
 		local vehicle = nil
 			ESX.ShowNotification(_U('not_near_tyre'))
+		elseif IsAnyVehicleNearPoint(coords.x, coords.y, coords.z, 5.0) then
 		else
 			ESX.ShowNotification(_U('no_vehicle_nearby'))
 		end	
@@ -200,7 +204,7 @@ AddEventHandler('tyrekit:onUse', function()
 			vehicle = GetClosestVehicle(coords.x, coords.y, coords.z, 5.0, 0, 71)
 		end
 
-		if DoesEntityExist(vehicle) and IsVehicleSeatFree(vehicle, -1) and IsPedOnFoot(playerPed) and closestTire ~= nil and IsMecanoOnline == false 
+		if DoesEntityExist(vehicle) and IsVehicleSeatFree(vehicle, -1) and IsPedOnFoot(playerPed) and closestTire ~= nil and not IsMecanoOnline 
 		then
 			TaskStartScenarioInPlace(playerPed, "CODE_HUMAN_MEDIC_KNEEL", 0, true)
 				-- WORLD_HUMAN_WELDING
@@ -212,7 +216,7 @@ AddEventHandler('tyrekit:onUse', function()
 				SetTextComponentFormat('STRING')
 				AddTextComponentString(_U('abort_hint'))
 				DisplayHelpTextFromStringLabel(0, 0, 1, -1)
-				if Config.EnableProgressBar == true then
+				if Config.EnableProgressBar then
 				exports['progressBars']:startUI(Config.TyreKitTime * 1000, _U('ReparingTyre'))
 				else
 				end
@@ -224,7 +228,7 @@ AddEventHandler('tyrekit:onUse', function()
 					ClearPedTasks(playerPed)
 					TriggerServerEvent('esx_repairkit:removeTyreKit')
 					ESX.ShowNotification(_U('finished_tyre_repair'))
-				if isReparing == true then
+				if isReparing then
 					isReparing = not isReparing
 				end
 
@@ -236,10 +240,10 @@ AddEventHandler('tyrekit:onUse', function()
 		Citizen.CreateThread(function()
 			while true do
 			Citizen.Wait(0)
-			if IsControlJustPressed(0, Keys["X"]) and isReparing == true then
+			if IsControlJustPressed(0, Keys["X"]) and isReparing then
 				ClearPedTasksImmediately(playerPed)
 				TerminateThread(ThreadID2)
-				if Config.EnableProgressBar == true then
+				if Config.EnableProgressBar then
 				exports['progressBars']:startUI(300, _U('Cancelling'))
 				else
 				end
