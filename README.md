@@ -1,4 +1,4 @@
-# esx_repairkit [![Release](https://img.shields.io/badge/Release-V%203.0-blue)](https://github.com/clementinise/esx_repairkit/releases/latest)
+# esx_repairkit [![Release](https://img.shields.io/badge/Release-V%203.1-blue)](https://github.com/clementinise/esx_repairkit/releases/latest)
 
 RepairKit script for FiveM ESX servers - https://forum.cfx.re/t/fork-esx-esx-repairkit-repairkit-item-for-car/1133523
 
@@ -23,9 +23,9 @@ Toggle Remove RepairKit & TyreKit if players abort the repair
 Toggle if Mechanic can use the RepairKit & TyreKit
 * **Config.RealisticVehicleFailure**
  If you're using [Realistic Vehicle Failure](https://forum.cfx.re/t/release-realistic-vehicle-failure/57801) then you can set it to true (Since “RealisticVehicleFailure” change how cars work, this config option allow to set the engine repair value lower than usual so the repaired vehicle is not indestructible)
-* **Config.ExplosionChance**
+* **Config.DestroyChance**
 The lower it is, the more it has a chance to make the engine fail and the car explode. (1 = 100%, 2 = 50%, 4 = 25%, 10 = 10%, 100 = 1%, etc)
-*If you don't want this feature, set **Config.ExplosionOnFailedRepair** to false*
+*If you don't want this feature, set **Config.DestroyOnFailedRepair** to false*
 * **Config.EnableProgressBar**
 If you don't want a progress bar when your player use the item or you don't want to use any dependencies ([progressBar](https://forum.cfx.re/t/release-progress-bars-1-0-standalone/526287)) then set it to **false**
 
@@ -34,7 +34,6 @@ Some new features will be added soon:  t̶i̶r̶e̶ ̶k̶i̶t̶,̶ ̶%̶ ̶f̶a�
 
 **KNOWN BUG :** 
 * If **"Config.IfMecaIsOnline"** is set to true then **"Config.AllowMecano"** won't work
-* Message can glitched and appear even if the items are used near engine or tyre
 
 **Preview:** [Coming Soon]()
 
