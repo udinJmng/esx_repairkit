@@ -2,7 +2,7 @@ ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 -- Update Checker
-local CurrentVersion = '3.0'
+local CurrentVersion = '3.1' -- Do Not Change This Value
 
 PerformHttpRequest('https://raw.githubusercontent.com/clementinise/esx_repairkit/master/version', function(Error, NewestVersion, Header)
 		print('\n')
@@ -12,13 +12,13 @@ PerformHttpRequest('https://raw.githubusercontent.com/clementinise/esx_repairkit
 		print('## Current Version: ' .. CurrentVersion)
 		print('## Newest Version: ' .. NewestVersion)
 		print('##')
-		if CurrentVersion ~= NewestVersion then
+		if CurrentVersion == NewestVersion then
+			print('## Up to date!')
+			print('########################')
+		else
 			print('## Outdated')
 			print('## Please check the GitHub and download the last update')
 			print('## https://github.com/clementinise/esx_repairkit/releases/latest')
-			print('########################')
-		else
-			print('## Up to date!')
 			print('########################')
 		end
 		print('\n')
