@@ -1,4 +1,4 @@
-# esx_repairkit [![Release](https://img.shields.io/badge/Release-V%203.1-blue)](https://github.com/clementinise/esx_repairkit/releases/latest)
+# esx_repairkit [![Release](https://img.shields.io/badge/Release-V%203.2-blue)](https://github.com/clementinise/esx_repairkit/releases/latest)
 
 RepairKit script for FiveM ESX servers - https://forum.cfx.re/t/fork-esx-esx-repairkit-repairkit-item-for-car/1133523
 
@@ -6,7 +6,7 @@ RepairKit script for FiveM ESX servers - https://forum.cfx.re/t/fork-esx-esx-rep
 * Repair Kit Item & Tyre Kit Item
 * Update Checker on resource start
 * More realistic since it needs you to be next to the engine or near the tyre to actually repair
-* It does not repair the visual aspect of the car, only the engine
+* It only repair the engine of your vehicle, not the "visual aspect" of it
 * Player can abort the repair by pressing "X"
 * Message if players attempt to repair the car and are not in front of the tyre or engine
 * French, English, Swedish language included
@@ -28,6 +28,9 @@ The lower it is, the more it has a chance to make the engine fail and the car ex
 *If you don't want this feature, set **Config.DestroyOnFailedRepair** to false*
 * **Config.EnableProgressBar**
 If you don't want a progress bar when your player use the item or you don't want to use any dependencies ([progressBar](https://forum.cfx.re/t/release-progress-bars-1-0-standalone/526287)) then set it to **false**
+* **Config.MechanicNameJob**
+If your mechanic job is not named "mecano", you can change it here
+
 
 
 Some new features will be added soon:  t̶i̶r̶e̶ ̶k̶i̶t̶,̶ ̶%̶ ̶f̶a̶i̶l̶u̶r̶e̶,  can't be used again after X times, change key for cancelling the repair in config file, etc
