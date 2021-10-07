@@ -2,7 +2,7 @@ ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 -- Update Checker
-local CurrentVersion = '3.1' -- Do Not Change This Value
+local CurrentVersion = '3.2' -- Do Not Change This Value
 
 PerformHttpRequest('https://raw.githubusercontent.com/clementinise/esx_repairkit/master/version', function(Error, NewestVersion, Header)
 		print('\n')
@@ -24,6 +24,8 @@ PerformHttpRequest('https://raw.githubusercontent.com/clementinise/esx_repairkit
 		print('\n')
 end)
 
+local mechanicjob = Config.MechanicNameJob
+
 -- Make the kit usable!
 ESX.RegisterUsableItem('repairkit', function(source)
 	local _source = source
@@ -32,7 +34,7 @@ ESX.RegisterUsableItem('repairkit', function(source)
 	if Config.AllowMecano then
 		TriggerClientEvent('esx_repairkit:onUse', _source)
 	else
-		if xPlayer.job.name ~= 'mecano' then
+		if xPlayer.job.name ~= mechanicjob then
 			TriggerClientEvent('esx_repairkit:onUse', _source)
 		end
 	end
@@ -45,7 +47,7 @@ ESX.RegisterUsableItem('tyrekit', function(source)
 	if Config.AllowMecano then
 		TriggerClientEvent('tyrekit:onUse', _source)
 	else
-		if xPlayer.job.name ~= 'mecano' then
+		if xPlayer.job.name ~= mechanicjob then
 			TriggerClientEvent('tyrekit:onUse', _source)
 		end
 	end
@@ -81,7 +83,7 @@ function MecanoOnline()
 
 	for i=1, #xPlayers, 1 do
 		local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-		if xPlayer.job.name == 'mecano' then
+		if xPlayer.job.name == mechanicjob then
 			MechanicConnected = MechanicConnected + 1
 		end
 	end
@@ -96,7 +98,12 @@ RegisterServerEvent('jobonline:get')
 AddEventHandler('jobonline:get', function()
 	local counted = {}
 
-	counted['mecano'] = MechanicConnected
+	counted[mechanicjob] = MechanicConnected
 
 	TriggerClientEvent('jobonline:set', source, counted)
+end)
+
+RegisterServerEvent("esx_repairkit:SetTyreSync")
+AddEventHandler("esx_repairkit:SetTyreSync", function(veh, tyre)
+	TriggerClientEvent("TyreSync", -1, veh, tyre)
 end)
