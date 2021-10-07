@@ -9,7 +9,7 @@ RepairKit script for FiveM ESX servers - https://forum.cfx.re/t/fork-esx-esx-rep
 * It only repair the engine of your vehicle, not the "visual aspect" of it
 * Player can abort the repair by pressing "X"
 * Message if players attempt to repair the car and are not in front of the tyre or engine
-* French, English, Swedish language included
+* French, English, Swedish, Deutsch language included
 ## RepairKit & TyreKit easily configurable: 
 * **Config.InfiniteRepairs & Config.InfiniteRepairsTyreKit** 
 Toggle Infinite RepairKit & TyreKit (One Kit last forever)
