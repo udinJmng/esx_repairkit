@@ -37,8 +37,9 @@ RegisterNetEvent('jobonline:set')
 AddEventHandler('jobonline:set', function(jobs_online)
 
 	jobs = jobs_online
+	mechanicjob = Config.MechanicNameJob
 
-	if jobs_online['mecano'] > 0 and Config.IfMecaIsOnline then
+	if jobs_online[mechanicjob] > 0 and Config.IfMecaIsOnline then
 		IsMecanoOnline = true
 	else 
 		IsMecanoOnline = false
@@ -228,6 +229,7 @@ AddEventHandler('tyrekit:onUse', function()
 					ClearPedTasks(playerPed)
 					TriggerServerEvent('esx_repairkit:removeTyreKit')
 					ESX.ShowNotification(_U('finished_tyre_repair'))
+					TriggerServerEvent('esx_repairkit:SetTyreSync', vehicle, closestTire.tireIndex)
 				if isReparing then
 					isReparing = not isReparing
 				end
@@ -257,4 +259,10 @@ AddEventHandler('tyrekit:onUse', function()
 		end
 	end)
 end
+end)
+
+RegisterNetEvent("TyreSync")
+AddEventHandler("TyreSync", function(veh, tyre)
+	SetVehicleTyreFixed(veh, tyre)
+	SetVehicleWheelHealth(veh, tyre, 100)
 end)
