@@ -97,6 +97,29 @@ AddEventHandler('esx_repairkit:onUse', function()
 				else
 				end
 				Citizen.Wait(Config.RepairTime * 1000)
+							
+							
+       TriggerEvent("mythic_progbar:client:progress", {
+        name = "unique_action_name",
+        duration =Config.RepairTime * 1000, _U('ReparingEngine')),
+        label = "Repair...",
+        useWhileDead = false,
+        canCancel = false,
+        controlDisables = {
+            disableMovement = true,
+            disableCarMovement = true,
+            disableMouse = false,
+            disableCombat = true,
+        },
+        animation = {
+            animDict = "mini@repair",
+            anim = "fixing_a_ped",
+        }
+    }, function(status)
+        if not status then
+            -- Do Something If Event Wasn't Cancelled
+        end
+    end)
 				
 				local destroychance = math.random(1, Config.DestroyChance)
 				if CurrentAction ~= nil then
