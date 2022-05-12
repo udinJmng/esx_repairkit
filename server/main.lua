@@ -27,7 +27,7 @@ end)
 local mechanicjob = Config.MechanicNameJob
 
 -- Make the kit usable!
-ESX.RegisterUsableItem('repairkit', function(source)
+ESX.RegisterUsableItem('fixkit', function(source)
 	local _source = source
 	local xPlayer = ESX.GetPlayerFromId(_source)
 	
@@ -70,7 +70,7 @@ AddEventHandler('esx_repairkit:removeKit', function()
 	local xPlayer = ESX.GetPlayerFromId(_source)
 
 	if not Config.InfiniteRepairs then
-		xPlayer.removeInventoryItem('repairkit', 1)
+		xPlayer.removeInventoryItem('fixkit', 1)
 		TriggerClientEvent(_U('used_kit'))
 	end
 end)
