@@ -92,36 +92,30 @@ AddEventHandler('esx_repairkit:onUse', function()
 				SetTextComponentFormat('STRING')
 				AddTextComponentString(_U('abort_hint'))
 				DisplayHelpTextFromStringLabel(0, 0, 1, -1)
-				if Config.EnableProgressBar then
-				exports['progressBars']:startUI(Config.RepairTime * 1000, _U('ReparingEngine'))
-				else
-				end
+				TriggerEvent("mythic_progbar:client:progress", {
+					name = "unique_action_name",
+					duration = Config.RepairTime * 1000,
+					label = "Repair Vehicle",
+					useWhileDead = false,
+					canCancel = true,
+					controlDisables = {
+						disableMovement = true,
+						disableCarMovement = true,
+						disableMouse = false,
+						disableCombat = true,
+					},
+					prop = {
+						model = "prop_paper_bag_small",
+					}
+				}, function(status)
+					if not status then
+						-- Do Something If Event Wasn't Cancelled
+					end
+				end)
 				Citizen.Wait(Config.RepairTime * 1000)
-							
-							
-       TriggerEvent("mythic_progbar:client:progress", {
-        name = "unique_action_name",
-        duration =Config.RepairTime * 1000, _U('ReparingEngine')),
-        label = "Repair...",
-        useWhileDead = false,
-        canCancel = false,
-        controlDisables = {
-            disableMovement = true,
-            disableCarMovement = true,
-            disableMouse = false,
-            disableCombat = true,
-        },
-        animation = {
-            animDict = "mini@repair",
-            anim = "fixing_a_ped",
-        }
-    }, function(status)
-        if not status then
-            -- Do Something If Event Wasn't Cancelled
-        end
-    end)
 				
 				local destroychance = math.random(1, Config.DestroyChance)
+				local hp = GetEntityHealth(GetPlayerPed(-1))
 				if CurrentAction ~= nil then
 					SetVehicleDoorShut(vehicle, 4,0,0)
 					SetVehicleEngineOn(vehicle, true, true)
@@ -143,8 +137,9 @@ AddEventHandler('esx_repairkit:onUse', function()
 					ESX.ShowNotification(_U('car_destroy'))
 					ClearPedTasksImmediately(playerPed)
 					SetVehicleEngineHealth(vehicle, 0)
-					Wait(4000)
-					-- SetVehicleTimedExplosion(vehicle)
+					SetEntityHealth(GetPlayerPed(-1), hp - 30);
+					Citizen.Wait(6000)
+					SetVehicleTimedExplosion(vehicle)
 				else
 					ESX.ShowNotification(_U('finished_repair'))
 				end
